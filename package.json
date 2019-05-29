@@ -1,0 +1,23 @@
+{
+  "name": "@cuterajat26/graphql-json-schema",
+  "version": "1.0.0",
+  "description": "A simple library to build graphql schema from json files.",
+  "main": "SchemaBuilder.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "json",
+    "graphql",
+    "schema",
+    "node"
+  ],
+  "author": "Rajat Talwar",
+  "license": "ISC",
+  "dependencies": {
+    "graphql": "^14.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^12.0.3"
+  }
+}

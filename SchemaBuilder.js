@@ -63,6 +63,9 @@ exports.getGqlFields = (parentname, configPath, schema) => {
     }
     return fields;
 };
+exports.schema_builder = (config_path) => {
+    return new graphql.GraphQLSchema(exports.schemaConfigBuilder(config_path));
+};
 exports.schemaConfigBuilder = (p) => {
     let config = JSON.parse(fs.readFileSync(p).toString('utf8'));
     let dependencies = config.dependencies;

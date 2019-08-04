@@ -6,24 +6,30 @@ const graphql = require("graphql");
 const graphql_1 = require("graphql");
 exports.getGQLType = (configPath, name, field) => {
     let type = field.type;
-    switch (type) {
-        case 'float':
-            return graphql.GraphQLFloat;
-        case 'string':
-            return graphql.GraphQLString;
-        case 'integer':
-            return graphql.GraphQLInt;
-        case 'boolean':
-            return graphql.GraphQLBoolean;
-        case 'object':
-            return new graphql_1.GraphQLObjectType({
-                name,
-                fields: exports.getGqlFields(name, configPath, field),
-                description: field.description
-            });
-        case 'array':
-            return new graphql.GraphQLList(exports.getGQLType(configPath, name, field.items));
-    }
+    let isInput = field.input;
+    let isRequired = field.required;
+    let gql_field = (() => {
+        switch (type) {
+            case 'float':
+                return graphql.GraphQLFloat;
+            case 'string':
+                return graphql.GraphQLString;
+            case 'integer':
+                return graphql.GraphQLInt;
+            case 'boolean':
+                return graphql.GraphQLBoolean;
+            case 'object':
+                let o = {
+                    name,
+                    fields: exports.getGqlFields(name, configPath, field),
+                    description: field.description
+                };
+                return isInput ? new graphql_1.GraphQLInputObjectType(o) : new graphql_1.GraphQLObjectType(o);
+            case 'array':
+                return new graphql.GraphQLList(exports.getGQLType(configPath, name, field.items));
+        }
+    })();
+    return isRequired ? new graphql_1.GraphQLNonNull(gql_field) : gql_field;
 };
 // export const buildType = (configPath: string, name: string, schema: any): GraphQLObjectType => {
 //     let fields = getGqlFields(configPath, schema);

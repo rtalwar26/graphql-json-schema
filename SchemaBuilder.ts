@@ -1,9 +1,12 @@
 import * as fs from "fs"
 import * as path from "path"
 import * as graphql from 'graphql';
-import { GraphQLObjectType } from 'graphql'
+import { GraphQLObjectType,GraphQLInputObjectType ,GraphQLNonNull} from 'graphql'
 export const getGQLType = (configPath: string, name: string, field: any): any => {
     let type = field.type;
+    let isInput = field.input;
+    let isRequired = field.required;
+    let gql_field = (()=>{
     switch (type) {
         case 'float':
             return graphql.GraphQLFloat
@@ -14,14 +17,19 @@ export const getGQLType = (configPath: string, name: string, field: any): any =>
         case 'boolean':
             return graphql.GraphQLBoolean
         case 'object':
-            return new GraphQLObjectType({
+            let o = {
                 name,
                 fields: getGqlFields(name, configPath, field),
                 description: field.description
-            });
+            };
+            return isInput ? new GraphQLInputObjectType(o) : new GraphQLObjectType(o);
         case 'array':
             return new graphql.GraphQLList(getGQLType(configPath, name, field.items))
     }
+})();
+
+return isRequired ? new GraphQLNonNull(gql_field) : gql_field;
+
 }
 // export const buildType = (configPath: string, name: string, schema: any): GraphQLObjectType => {
 //     let fields = getGqlFields(configPath, schema);

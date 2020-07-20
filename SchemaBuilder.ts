@@ -25,6 +25,9 @@ export const getGQLType = (configPath: string, name: string, field: any, isInput
                 return isInput ? new GraphQLInputObjectType(o) : new GraphQLObjectType(o);
             case 'array':
                 return new graphql.GraphQLList(getGQLType(configPath, name, field.items, isInput))
+
+            default:
+                throw new Error('graphql-json-schema: Unsupported type ' + type);
         }
     })();
 
@@ -42,17 +45,17 @@ export const getGQLType = (configPath: string, name: string, field: any, isInput
 
 export const getGqlFields = (parentname: string, configPath: string, schema: any, isInput = false): any => {
 
-    let fields = {};
+    let fields: { [key: string]: any } = {};
     let properties = schema.properties;
 
     let isImported = typeof properties === 'string' && (properties as string).startsWith('require:');
     let fieldConfigPath = isImported ? path.join(path.dirname(configPath), properties.replace(/require:/, '').trim()) : configPath;
-    let properties_data = isImported ? JSON.parse(fs.readFileSync(fieldConfigPath).toString('utf8')) : properties;
+    let properties_data: { [key: string]: any } = isImported ? JSON.parse(fs.readFileSync(fieldConfigPath).toString('utf8')) : properties;
     let importedFields = {};
     for (let key in properties_data) {
         let isKeyImported = typeof key === 'string' && (key as string).startsWith('require:');
         if (isKeyImported) {
-            let keyConfigPath = path.join(path.dirname(configPath), properties_data[key].replace(/require:/, '').trim())
+            // let keyConfigPath = path.join(path.dirname(configPath), properties_data[key].replace(/require:/, '').trim())
             let propertyData = JSON.parse(fs.readFileSync(fieldConfigPath).toString('utf8'));
             importedFields = { ...importedFields, ...propertyData };
         } else {
@@ -83,7 +86,7 @@ export const schemaConfigBuilder = (p: string): any => {
     let queryFields = {};
     let mutationFields = {};
     for (let d of dependencies) {
-        let destinationBucket = (d.type === 'Query') ? queryFields : mutationFields
+        let destinationBucket: any = (d.type === 'Query') ? queryFields : mutationFields
         let configPath = path.join(configPathDir, d.path);
         d.schema = JSON.parse(fs.readFileSync(configPath).toString('utf8'));
 

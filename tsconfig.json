@@ -1,17 +1,18 @@
 {
   "compilerOptions": {
+    "strict": true,
     "module": "commonjs",
     "target": "es2017",
     "noImplicitAny": false,
     "sourceMap": false,
     "baseUrl": ".",
-    "lib": ["es2017"],
-    "paths": {
-
-    },
-    "types": ["node"]
+    "lib": [
+      "es2017"
+    ],
+    "paths": {},
+    "types": [
+      "node"
+    ]
   },
-  "exclude": [
-
-  ]
+  "exclude": []
 }

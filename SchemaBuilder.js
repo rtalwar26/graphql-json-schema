@@ -26,6 +26,8 @@ exports.getGQLType = (configPath, name, field, isInput = false) => {
                 return isInput ? new graphql_1.GraphQLInputObjectType(o) : new graphql_1.GraphQLObjectType(o);
             case 'array':
                 return new graphql.GraphQLList(exports.getGQLType(configPath, name, field.items, isInput));
+            default:
+                throw new Error('graphql-json-schema: Unsupported type ' + type);
         }
     })();
     return isRequired ? new graphql_1.GraphQLNonNull(gql_field) : gql_field;
@@ -48,7 +50,7 @@ exports.getGqlFields = (parentname, configPath, schema, isInput = false) => {
     for (let key in properties_data) {
         let isKeyImported = typeof key === 'string' && key.startsWith('require:');
         if (isKeyImported) {
-            let keyConfigPath = path.join(path.dirname(configPath), properties_data[key].replace(/require:/, '').trim());
+            // let keyConfigPath = path.join(path.dirname(configPath), properties_data[key].replace(/require:/, '').trim())
             let propertyData = JSON.parse(fs.readFileSync(fieldConfigPath).toString('utf8'));
             importedFields = Object.assign({}, importedFields, propertyData);
         }

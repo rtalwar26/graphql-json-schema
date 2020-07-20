@@ -4,9 +4,8 @@ const fs = require("fs");
 const path = require("path");
 const graphql = require("graphql");
 const graphql_1 = require("graphql");
-exports.getGQLType = (configPath, name, field) => {
+exports.getGQLType = (configPath, name, field, isInput = false) => {
     let type = field.type;
-    let isInput = field.input;
     let isRequired = field.required;
     let gql_field = (() => {
         switch (type) {
@@ -21,12 +20,12 @@ exports.getGQLType = (configPath, name, field) => {
             case 'object':
                 let o = {
                     name,
-                    fields: exports.getGqlFields(name, configPath, field),
+                    fields: exports.getGqlFields(name, configPath, field, isInput),
                     description: field.description
                 };
                 return isInput ? new graphql_1.GraphQLInputObjectType(o) : new graphql_1.GraphQLObjectType(o);
             case 'array':
-                return new graphql.GraphQLList(exports.getGQLType(configPath, name, field.items));
+                return new graphql.GraphQLList(exports.getGQLType(configPath, name, field.items, isInput));
         }
     })();
     return isRequired ? new graphql_1.GraphQLNonNull(gql_field) : gql_field;
@@ -39,7 +38,7 @@ exports.getGQLType = (configPath, name, field) => {
 //         description: schema.description
 //     });
 // }
-exports.getGqlFields = (parentname, configPath, schema) => {
+exports.getGqlFields = (parentname, configPath, schema, isInput = false) => {
     let fields = {};
     let properties = schema.properties;
     let isImported = typeof properties === 'string' && properties.startsWith('require:');
@@ -55,7 +54,7 @@ exports.getGqlFields = (parentname, configPath, schema) => {
         }
         else {
             fields[key] = {
-                type: exports.getGQLType(fieldConfigPath, `${parentname}_${key}`, properties_data[key]),
+                type: exports.getGQLType(fieldConfigPath, `${parentname}_${key}`, properties_data[key], isInput),
                 description: typeof properties_data[key].description === 'string' ? properties_data[key].description : JSON.stringify(properties_data[key].description)
             };
         }
@@ -63,7 +62,7 @@ exports.getGqlFields = (parentname, configPath, schema) => {
     properties_data = importedFields;
     for (let key in properties_data) {
         fields[key] = {
-            type: exports.getGQLType(fieldConfigPath, `${parentname}_${key}`, properties_data[key]),
+            type: exports.getGQLType(fieldConfigPath, `${parentname}_${key}`, properties_data[key], isInput),
             description: typeof properties_data[key].description === 'string' ? properties_data[key].description : JSON.stringify(properties_data[key].description)
         };
     }
@@ -83,8 +82,8 @@ exports.schemaConfigBuilder = (p) => {
         let configPath = path.join(configPathDir, d.path);
         d.schema = JSON.parse(fs.readFileSync(configPath).toString('utf8'));
         destinationBucket[d.name] = {
-            type: exports.getGQLType(configPath, d.name, d.schema.response),
-            args: exports.getGqlFields(d.name, configPath, d.schema.request),
+            type: exports.getGQLType(configPath, d.name, d.schema.response, false),
+            args: exports.getGqlFields(d.name, configPath, d.schema.request, true),
             description: typeof d.schema.request.description === 'string' ? d.schema.request.description : JSON.stringify(d.schema.request.description)
         };
     }

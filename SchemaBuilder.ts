@@ -27,6 +27,7 @@ export const getGQLType = (configPath: string, name: string, field: any, isInput
                 return new graphql.GraphQLList(getGQLType(configPath, name, field.items, isInput))
 
             default:
+                console.log({ type, configPath, name, field });
                 throw new Error('graphql-json-schema: Unsupported type ' + type);
         }
     })();

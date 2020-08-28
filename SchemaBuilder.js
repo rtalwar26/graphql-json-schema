@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.schemaConfigBuilder = exports.schema_builder = exports.getGqlFields = exports.getGQLType = void 0;
 const fs = require("fs");
 const path = require("path");
 const graphql = require("graphql");
@@ -27,6 +28,7 @@ exports.getGQLType = (configPath, name, field, isInput = false) => {
             case 'array':
                 return new graphql.GraphQLList(exports.getGQLType(configPath, name, field.items, isInput));
             default:
+                console.log({ type, configPath, name, field });
                 throw new Error('graphql-json-schema: Unsupported type ' + type);
         }
     })();
@@ -52,7 +54,7 @@ exports.getGqlFields = (parentname, configPath, schema, isInput = false) => {
         if (isKeyImported) {
             // let keyConfigPath = path.join(path.dirname(configPath), properties_data[key].replace(/require:/, '').trim())
             let propertyData = JSON.parse(fs.readFileSync(fieldConfigPath).toString('utf8'));
-            importedFields = Object.assign({}, importedFields, propertyData);
+            importedFields = Object.assign(Object.assign({}, importedFields), propertyData);
         }
         else {
             fields[key] = {

@@ -92,12 +92,11 @@ export const schemaConfigBuilder = (p: string): any => {
         d.schema = JSON.parse(fs.readFileSync(configPath).toString('utf8'));
 
         destinationBucket[d.name] = {
-            type: getGQLType(configPath, d.name, d.schema.response, false),
+            type: getGQLType(configPath, `response_${d.name}`, d.schema.response, false),
             args: getGqlFields(d.name, configPath, d.schema.request, true),
             description: typeof d.schema.request.description === 'string' ? d.schema.request.description : JSON.stringify(d.schema.request.description)
         }
     }
-
     const schemaConfig = {
         query: new GraphQLObjectType({
             name: 'Query',

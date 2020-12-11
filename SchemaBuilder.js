@@ -28,7 +28,7 @@ exports.getGQLType = (configPath, name, field, isInput = false) => {
             case 'array':
                 return new graphql.GraphQLList(exports.getGQLType(configPath, name, field.items, isInput));
             default:
-                console.log({ type, configPath, name, field });
+                console.error({ type, configPath, name, field });
                 throw new Error('graphql-json-schema: Unsupported type ' + type);
         }
     })();
@@ -86,7 +86,7 @@ exports.schemaConfigBuilder = (p) => {
         let configPath = path.join(configPathDir, d.path);
         d.schema = JSON.parse(fs.readFileSync(configPath).toString('utf8'));
         destinationBucket[d.name] = {
-            type: exports.getGQLType(configPath, d.name, d.schema.response, false),
+            type: exports.getGQLType(configPath, `response_${d.name}`, d.schema.response, false),
             args: exports.getGqlFields(d.name, configPath, d.schema.request, true),
             description: typeof d.schema.request.description === 'string' ? d.schema.request.description : JSON.stringify(d.schema.request.description)
         };

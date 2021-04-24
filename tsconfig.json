@@ -6,13 +6,9 @@
     "noImplicitAny": false,
     "sourceMap": false,
     "baseUrl": ".",
-    "lib": [
-      "es2017"
-    ],
+    "lib": ["es2017"],
     "paths": {},
-    "types": [
-      "node"
-    ]
+    "types": ["node"]
   },
   "exclude": []
 }

@@ -14,12 +14,11 @@
   ],
   "author": "Rajat Talwar",
   "license": "ISC",
-  "dependencies": {},
   "devDependencies": {
     "@types/node": "^12.0.3",
     "graphql": "^14.0.0"
   },
   "peerDependencies": {
-    "graphql": "^0.12.0 || ^0.13.0 || ^14.0.0"
+    "graphql": "^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.3.0"
   }
 }

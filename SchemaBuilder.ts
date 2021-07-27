@@ -152,19 +152,26 @@ export const schemaConfigBuilder = (p: string): any => {
           : JSON.stringify(d.schema.request.description),
     };
   }
-  const schemaConfig = {
-    query: new GraphQLObjectType({
-      name: "Query",
-      fields: {
-        ...queryFields,
-      },
-    }),
-    mutation: new GraphQLObjectType({
-      name: "Mutation",
-      fields: {
-        ...mutationFields,
-      },
-    }),
-  };
+  var schemaConfig: any = {};
+
+  Object.keys(queryFields).length > 0 &&
+    (() => {
+      schemaConfig.query = new GraphQLObjectType({
+        name: "Query",
+        fields: {
+          ...queryFields,
+        },
+      });
+    })();
+
+  Object.keys(mutationFields).length > 0 &&
+    (() => {
+      schemaConfig.mutation = new GraphQLObjectType({
+        name: "Mutation",
+        fields: {
+          ...mutationFields,
+        },
+      });
+    })();
   return schemaConfig;
 };
